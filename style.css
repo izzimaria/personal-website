@@ -175,6 +175,13 @@ a:hover {
     color: var(--color-accent);
 }
 
+/* Substack embed */
+.substack-embed {
+    margin-top: 2rem;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
 /* Contact / social */
 #contact p {
     margin-bottom: 1rem;

@@ -76,33 +76,75 @@
     <!-- ===== WRITING ===== -->
     <section id="writing">
         <h2>Writing</h2>
-        <p class="section-intro">Essays, blog posts, and other writing.</p>
+        <p class="section-intro">My personal musings — also on <a href="https://izzimaria.substack.com/">Substack</a>.</p>
 
-        <ul class="item-list">
-            <!-- Copy and paste an <li> block to add more items -->
-            <li>
-                <span class="item-date">Mar 2026</span>
-                <div>
-                    <a href="#" class="item-title">Title of a Blog Post or Essay</a>
-                    <p class="item-desc">A one-line summary of what this piece is about.</p>
-                </div>
-            </li>
-            <li>
-                <span class="item-date">Jan 2026</span>
-                <div>
-                    <a href="#" class="item-title">Another Piece of Writing</a>
-                    <p class="item-desc">Brief description or subtitle.</p>
-                </div>
-            </li>
-            <li>
-                <span class="item-date">Nov 2025</span>
-                <div>
-                    <a href="#" class="item-title">An Older Essay</a>
-                    <p class="item-desc">What you wrote about and why.</p>
-                </div>
-            </li>
+        <!-- Posts are loaded automatically from Substack RSS -->
+        <ul class="item-list" id="substack-posts">
+            <li class="loading-msg">Loading posts...</li>
         </ul>
+
+        <!-- Substack subscribe embed -->
+        <div class="substack-embed">
+            <iframe src="https://izzimaria.substack.com/embed" width="100%" height="150" frameborder="0" scrolling="no"></iframe>
+        </div>
     </section>
+
+    <script>
+        (async function loadSubstackPosts() {
+            const feed = 'https://izzimaria.substack.com/feed';
+            // Use a public CORS proxy to fetch the RSS feed from a static site
+            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feed);
+            const list = document.getElementById('substack-posts');
+
+            try {
+                const res = await fetch(proxyUrl);
+                const text = await res.text();
+                const xml = new DOMParser().parseFromString(text, 'text/xml');
+                const items = xml.querySelectorAll('item');
+
+                if (items.length === 0) {
+                    list.innerHTML = '<li>No posts found.</li>';
+                    return;
+                }
+
+                list.innerHTML = '';
+
+                items.forEach(item => {
+                    const title = item.querySelector('title')?.textContent || '';
+                    const link = item.querySelector('link')?.textContent || '#';
+                    const desc = item.querySelector('description')?.textContent || '';
+                    const pubDate = item.querySelector('pubDate')?.textContent;
+
+                    // Format date as "Mon YYYY"
+                    let dateStr = '';
+                    if (pubDate) {
+                        const d = new Date(pubDate);
+                        dateStr = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    }
+
+                    // Strip HTML tags from description and truncate
+                    const tmp = document.createElement('div');
+                    tmp.innerHTML = desc;
+                    let plainDesc = tmp.textContent || tmp.innerText || '';
+                    if (plainDesc.length > 200) {
+                        plainDesc = plainDesc.substring(0, 200).trim() + '...';
+                    }
+
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="item-date">${dateStr}</span>
+                        <div>
+                            <a href="${link}" class="item-title" target="_blank" rel="noopener">${title}</a>
+                            <p class="item-desc">${plainDesc}</p>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (e) {
+                list.innerHTML = '<li>Could not load posts. <a href="https://izzimaria.substack.com/">Read on Substack →</a></li>';
+            }
+        })();
+    </script>
 
     <!-- ===== CONTACT ===== -->
     <section id="contact">
