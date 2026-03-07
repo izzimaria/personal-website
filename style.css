@@ -1,0 +1,243 @@
+/* ========================================
+   PERSONAL SITE — STYLE
+   Edit colors/fonts below to customize.
+   ======================================== */
+
+:root {
+    --color-bg: #fafaf9;
+    --color-text: #1c1917;
+    --color-muted: #78716c;
+    --color-accent: #b45309;
+    --color-link: #92400e;
+    --color-border: #e7e5e4;
+    --font-body: 'Georgia', 'Times New Roman', serif;
+    --font-heading: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --max-width: 640px;
+}
+
+/* Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.7;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Nav */
+nav {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    z-index: 10;
+}
+
+.nav-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    color: var(--color-text);
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--color-muted);
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--color-text);
+}
+
+/* Main */
+main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+section {
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+section:last-child {
+    border-bottom: none;
+}
+
+h1 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.01em;
+}
+
+.tagline {
+    font-size: 1.1rem;
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+}
+
+.bio p {
+    margin-bottom: 1rem;
+}
+
+.section-intro {
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Item lists (research & writing) */
+.item-list {
+    list-style: none;
+}
+
+.item-list li {
+    display: flex;
+    gap: 1.2rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--color-border);
+    align-items: baseline;
+}
+
+.item-date {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    min-width: 5rem;
+    flex-shrink: 0;
+}
+
+.item-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.item-title:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+.item-desc {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-top: 0.25rem;
+    line-height: 1.5;
+}
+
+/* Links */
+a {
+    color: var(--color-link);
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--color-accent);
+}
+
+/* Contact / social */
+#contact p {
+    margin-bottom: 1rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.social-links a {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.social-links a:hover {
+    color: var(--color-text);
+    border-color: var(--color-text);
+}
+
+/* Footer */
+footer {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+footer p {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: var(--color-muted);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    body {
+        font-size: 16px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .item-list li {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .item-date {
+        min-width: auto;
+    }
+
+    section {
+        padding: 2.5rem 0;
+    }
+}
