@@ -1,13 +1,4 @@
 (function () {
-  const globalDefaults = window.SubstackFeedWidget || {};
-  const defaults = {
-    substackUrl: '',
-    posts: 3,
-    showImages: true,
-    showDates: true,
-    ...globalDefaults
-  };
-
   const containers = document.querySelectorAll('.substack-feed-embed, #substack-feed-embed');
   if (!containers.length) return;
 
@@ -15,8 +6,7 @@
     try {
       return new Intl.DateTimeFormat(undefined, {
         year: 'numeric',
-        month: 'short',
-        day: '2-digit'
+        month: 'short'
       }).format(new Date(iso));
     } catch {
       return '';
@@ -25,39 +15,21 @@
 
   const normalizeUrl = (u) => {
     if (!u) return '';
-    return /^https?:\/\//i.test(u) ? u : `https://${u}`;
+    return /^https?:\/\//i.test(u) ? u.replace(/\/$/, '') : `https://${u.replace(/\/$/, '')}`;
   };
 
-  const extractFirstImg = (html) => {
-    if (!html) return null;
-    const m = html.match(/<img[^>]+src="([^"]+)"/i);
-    return m ? m[1] : null;
-  };
-
-  const truncate = (str, max = 150) =>
+  const truncate = (str, max = 160) =>
     str && str.length > max ? `${str.slice(0, max)}…` : str || '';
 
-  const buildCard = (post, opts) => {
+  const buildCard = (post) => {
     const a = document.createElement('a');
     a.className = 'substack-card';
     a.target = '_blank';
     a.rel = 'noopener';
-    a.href = post.link;
+    a.href = post.canonical_url || post.url || '#';
 
     const wrap = document.createElement('div');
     wrap.className = 'substack-post';
-
-    if (opts.showImages) {
-      const imgUrl = extractFirstImg(post.content);
-      if (imgUrl) {
-        const img = document.createElement('img');
-        img.className = 'substack-thumbnail';
-        img.loading = 'lazy';
-        img.alt = post.title || 'Substack post image';
-        img.src = imgUrl;
-        wrap.appendChild(img);
-      }
-    }
 
     const body = document.createElement('div');
 
@@ -66,80 +38,63 @@
     h3.textContent = post.title || 'Untitled';
     body.appendChild(h3);
 
-    if (opts.showDates && post.pubDate) {
+    if (post.post_date) {
       const pDate = document.createElement('p');
       pDate.className = 'substack-date';
-      pDate.textContent = fmtDate(post.pubDate);
+      pDate.textContent = fmtDate(post.post_date);
       body.appendChild(pDate);
     }
 
-    const pDesc = document.createElement('p');
-    pDesc.className = 'substack-desc';
-    pDesc.textContent = truncate(post.description, 160);
-    body.appendChild(pDesc);
+    const subtitle = post.subtitle || post.description || '';
+    if (subtitle) {
+      const pDesc = document.createElement('p');
+      pDesc.className = 'substack-desc';
+      pDesc.textContent = truncate(subtitle, 160);
+      body.appendChild(pDesc);
+    }
 
     wrap.appendChild(body);
     a.appendChild(wrap);
     return a;
   };
 
-  const fetchWithTimeout = (url, ms = 10000) => {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), ms);
-    return fetch(url, { signal: ctl.signal }).finally(() => clearTimeout(t));
-  };
-
   containers.forEach(async (container) => {
-    const cfg = {
-      substackUrl:
-        container.getAttribute('data-substack-url') || defaults.substackUrl,
-      posts:
-        parseInt(container.getAttribute('data-posts'), 10) || defaults.posts,
-      showImages:
-        (container.getAttribute('data-show-images') ||
-          `${defaults.showImages}`) !== 'false',
-      showDates:
-        (container.getAttribute('data-show-dates') ||
-          `${defaults.showDates}`) !== 'false'
-    };
+    const rawUrl = container.getAttribute('data-substack-url') || '';
+    const limit = parseInt(container.getAttribute('data-posts'), 10) || 10;
 
-    if (!cfg.substackUrl) {
-      container.innerHTML =
-        '<p class="substack-error">Error: No Substack URL specified.</p>';
+    if (!rawUrl) {
+      container.innerHTML = '<p class="substack-error">Error: No Substack URL specified.</p>';
       return;
     }
 
-    const feedBase = normalizeUrl(cfg.substackUrl);
-    const rssUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`${feedBase}/feed`)}`;
+    const base = normalizeUrl(rawUrl);
+    const apiUrl = `${base}/api/v1/posts?limit=${limit}`;
 
     container.innerHTML = '<div class="substack-skeleton">Loading…</div>';
 
     try {
-      const res = await fetchWithTimeout(rssUrl, 12000);
+      const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const posts = await res.json();
 
-      if (data.status !== 'ok' || !Array.isArray(data.items)) {
-        throw new Error(data.message || 'Failed to parse feed');
-      }
+      // Filter out "coming soon" placeholder posts
+      const filtered = posts.filter(p =>
+        p.title && p.title.toLowerCase() !== 'coming soon' && p.audience !== 'only_paid'
+      );
 
-      const posts = data.items.slice(0, Math.max(1, cfg.posts));
-      if (!posts.length) {
-        container.innerHTML =
-          '<p class="substack-empty">No posts available.</p>';
+      if (!filtered.length) {
+        container.innerHTML = '<p class="substack-empty">No posts available yet.</p>';
         return;
       }
 
       container.innerHTML = '';
-      posts.forEach((post) => {
-        container.appendChild(buildCard(post, cfg));
+      filtered.forEach((post) => {
+        container.appendChild(buildCard(post));
       });
     } catch (err) {
       console.error('Substack feed error:', err);
       container.innerHTML =
-        '<p class="substack-error">Could not load posts. <a href="' +
-        normalizeUrl(cfg.substackUrl) +
-        '">Read on Substack →</a></p>';
+        '<p class="substack-error">Could not load posts. <a href="' + base + '">Read on Substack →</a></p>';
     }
   });
 })();
