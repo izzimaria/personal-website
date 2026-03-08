@@ -13,7 +13,7 @@
         <a href="#about" class="nav-name">Maria</a>
         <div class="nav-links">
             <a href="#about">About</a>
-            <a href="#research">Research</a>
+            <a href="#research">Experiences</a>
             <a href="#writing">Writing</a>
             <a href="#contact">Contact</a>
         </div>
@@ -24,27 +24,25 @@
 
     <!-- ===== ABOUT ===== -->
     <section id="about">
-        <h1>Hi, I'm Maria.</h1>
-        <p class="tagline">
-            <!-- Edit this tagline to describe yourself in one line -->
-            Researcher, writer, and builder of things.
-        </p>
+        <div class="about-header">
+            <img src="Untitled drawing.png" alt="Photo of Maria" class="headshot">
+            <div>
+                <h1>Hi, I'm Maria.</h1>
+                <p class="tagline">
+                    I spend my time investigating, learning, and connecting. I'm interested in people, religion, history, and AI safety and security.
+                </p>
+            </div>
+        </div>
         <div class="bio">
             <p>
-                <!-- Edit your bio here -->
-                I'm interested in [your interests here]. Currently I'm working on
-                [what you're working on]. Previously I was at [previous roles/orgs].
-            </p>
-            <p>
-                This site is a home for my research, writing, and projects.
-                Feel free to look around.
+                I currently engineer growth experiments at Netflix. Previously, I've done a variety of engineering and research.
             </p>
         </div>
     </section>
 
-    <!-- ===== RESEARCH ===== -->
+    <!-- ===== EXPERIENCE ===== -->
     <section id="research">
-        <h2>Research</h2>
+        <h2>Experience</h2>
         <p class="section-intro">Selected research and projects.</p>
 
         <ul class="item-list">
@@ -76,12 +74,15 @@
     <!-- ===== WRITING ===== -->
     <section id="writing">
         <h2>Writing</h2>
-        <p class="section-intro">My personal musings — also on <a href="https://izzimaria.substack.com/">Substack</a>.</p>
+        <p class="section-intro">Bits of my writing — also on <a href="https://izzimaria.substack.com/">Substack</a>.</p>
 
-        <!-- Posts are loaded automatically from Substack RSS -->
-        <ul class="item-list" id="substack-posts">
-            <li class="loading-msg">Loading posts...</li>
-        </ul>
+        <!-- Posts loaded automatically via rss2json -->
+        <div class="substack-feed-embed"
+             data-substack-url="izzimaria.substack.com"
+             data-posts="10"
+             data-show-images="false"
+             data-show-dates="true">
+        </div>
 
         <!-- Substack subscribe embed -->
         <div class="substack-embed">
@@ -89,83 +90,15 @@
         </div>
     </section>
 
-    <script>
-        (async function loadSubstackPosts() {
-            const feed = 'https://izzimaria.substack.com/feed';
-            // Use a public CORS proxy to fetch the RSS feed from a static site
-            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feed);
-            const list = document.getElementById('substack-posts');
+    <script src="embed-substack-rss.js"></script>
 
-            try {
-                const res = await fetch(proxyUrl);
-                const text = await res.text();
-                const xml = new DOMParser().parseFromString(text, 'text/xml');
-                const items = xml.querySelectorAll('item');
-
-                if (items.length === 0) {
-                    list.innerHTML = '<li>No posts found.</li>';
-                    return;
-                }
-
-                list.innerHTML = '';
-
-                items.forEach(item => {
-                    const title = item.querySelector('title')?.textContent || '';
-                    const link = item.querySelector('link')?.textContent || '#';
-                    const desc = item.querySelector('description')?.textContent || '';
-                    const pubDate = item.querySelector('pubDate')?.textContent;
-
-                    // Format date as "Mon YYYY"
-                    let dateStr = '';
-                    if (pubDate) {
-                        const d = new Date(pubDate);
-                        dateStr = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                    }
-
-                    // Strip HTML tags from description and truncate
-                    const tmp = document.createElement('div');
-                    tmp.innerHTML = desc;
-                    let plainDesc = tmp.textContent || tmp.innerText || '';
-                    if (plainDesc.length > 200) {
-                        plainDesc = plainDesc.substring(0, 200).trim() + '...';
-                    }
-
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span class="item-date">${dateStr}</span>
-                        <div>
-                            <a href="${link}" class="item-title" target="_blank" rel="noopener">${title}</a>
-                            <p class="item-desc">${plainDesc}</p>
-                        </div>
-                    `;
-                    list.appendChild(li);
-                });
-            } catch (e) {
-                list.innerHTML = '<li>Could not load posts. <a href="https://izzimaria.substack.com/">Read on Substack →</a></li>';
-            }
-        })();
-    </script>
-
-    <!-- ===== CONTACT ===== -->
-    <section id="contact">
-        <h2>Contact</h2>
-        <p>
-            You can reach me at
-            <a href="mailto:your@email.com">your@email.com</a>.
-        </p>
-        <div class="social-links">
-            <!-- Remove or add links as needed -->
-            <a href="https://twitter.com/yourhandle">Twitter</a>
-            <a href="https://github.com/yourhandle">GitHub</a>
-            <a href="https://scholar.google.com/citations?user=YOURID">Google Scholar</a>
-        </div>
-    </section>
+    <!-- ===== SOCIALS ===== -->
+    <div class="social-links">
+        <!-- Remove or add links as needed -->
+        <a href="https://www.linkedin.com/in/maria-izzi/">LinkedIn</a>
+    </div>
 
 </main>
-
-<footer>
-    <p>&copy; 2026 Maria. Built with plain HTML & CSS.</p>
-</footer>
 
 </body>
 </html>

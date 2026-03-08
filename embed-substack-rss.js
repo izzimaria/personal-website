@@ -1,0 +1,145 @@
+(function () {
+  const globalDefaults = window.SubstackFeedWidget || {};
+  const defaults = {
+    substackUrl: '',
+    posts: 3,
+    showImages: true,
+    showDates: true,
+    ...globalDefaults
+  };
+
+  const containers = document.querySelectorAll('.substack-feed-embed, #substack-feed-embed');
+  if (!containers.length) return;
+
+  const fmtDate = (iso) => {
+    try {
+      return new Intl.DateTimeFormat(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      }).format(new Date(iso));
+    } catch {
+      return '';
+    }
+  };
+
+  const normalizeUrl = (u) => {
+    if (!u) return '';
+    return /^https?:\/\//i.test(u) ? u : `https://${u}`;
+  };
+
+  const extractFirstImg = (html) => {
+    if (!html) return null;
+    const m = html.match(/<img[^>]+src="([^"]+)"/i);
+    return m ? m[1] : null;
+  };
+
+  const truncate = (str, max = 150) =>
+    str && str.length > max ? `${str.slice(0, max)}…` : str || '';
+
+  const buildCard = (post, opts) => {
+    const a = document.createElement('a');
+    a.className = 'substack-card';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.href = post.link;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'substack-post';
+
+    if (opts.showImages) {
+      const imgUrl = extractFirstImg(post.content);
+      if (imgUrl) {
+        const img = document.createElement('img');
+        img.className = 'substack-thumbnail';
+        img.loading = 'lazy';
+        img.alt = post.title || 'Substack post image';
+        img.src = imgUrl;
+        wrap.appendChild(img);
+      }
+    }
+
+    const body = document.createElement('div');
+
+    const h3 = document.createElement('h3');
+    h3.className = 'substack-title';
+    h3.textContent = post.title || 'Untitled';
+    body.appendChild(h3);
+
+    if (opts.showDates && post.pubDate) {
+      const pDate = document.createElement('p');
+      pDate.className = 'substack-date';
+      pDate.textContent = fmtDate(post.pubDate);
+      body.appendChild(pDate);
+    }
+
+    const pDesc = document.createElement('p');
+    pDesc.className = 'substack-desc';
+    pDesc.textContent = truncate(post.description, 160);
+    body.appendChild(pDesc);
+
+    wrap.appendChild(body);
+    a.appendChild(wrap);
+    return a;
+  };
+
+  const fetchWithTimeout = (url, ms = 10000) => {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), ms);
+    return fetch(url, { signal: ctl.signal }).finally(() => clearTimeout(t));
+  };
+
+  containers.forEach(async (container) => {
+    const cfg = {
+      substackUrl:
+        container.getAttribute('data-substack-url') || defaults.substackUrl,
+      posts:
+        parseInt(container.getAttribute('data-posts'), 10) || defaults.posts,
+      showImages:
+        (container.getAttribute('data-show-images') ||
+          `${defaults.showImages}`) !== 'false',
+      showDates:
+        (container.getAttribute('data-show-dates') ||
+          `${defaults.showDates}`) !== 'false'
+    };
+
+    if (!cfg.substackUrl) {
+      container.innerHTML =
+        '<p class="substack-error">Error: No Substack URL specified.</p>';
+      return;
+    }
+
+    const feedBase = normalizeUrl(cfg.substackUrl);
+    const rssUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`${feedBase}/feed`)}`;
+
+    container.innerHTML = '<div class="substack-skeleton">Loading…</div>';
+
+    try {
+      const res = await fetchWithTimeout(rssUrl, 12000);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (data.status !== 'ok' || !Array.isArray(data.items)) {
+        throw new Error(data.message || 'Failed to parse feed');
+      }
+
+      const posts = data.items.slice(0, Math.max(1, cfg.posts));
+      if (!posts.length) {
+        container.innerHTML =
+          '<p class="substack-empty">No posts available.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      posts.forEach((post) => {
+        container.appendChild(buildCard(post, cfg));
+      });
+    } catch (err) {
+      console.error('Substack feed error:', err);
+      container.innerHTML =
+        '<p class="substack-error">Could not load posts. <a href="' +
+        normalizeUrl(cfg.substackUrl) +
+        '">Read on Substack →</a></p>';
+    }
+  });
+})();

@@ -107,10 +107,30 @@ h2 {
     letter-spacing: -0.01em;
 }
 
+/* About header with photo */
+.about-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.headshot {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.about-header h1 {
+    margin-bottom: 0.3rem;
+}
+
 .tagline {
     font-size: 1.1rem;
     color: var(--color-muted);
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
 }
 
 .bio p {
@@ -175,7 +195,82 @@ a:hover {
     color: var(--color-accent);
 }
 
-/* Substack embed */
+/* Substack feed cards */
+.substack-feed-embed {
+    display: grid;
+    gap: 0;
+}
+
+.substack-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--color-border);
+    transition: background 0.15s;
+}
+
+.substack-card:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.substack-post {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.substack-thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.substack-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-link);
+    margin: 0;
+    transition: color 0.2s;
+}
+
+.substack-card:hover .substack-title {
+    color: var(--color-accent);
+}
+
+.substack-date {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    margin-top: 0.15rem;
+}
+
+.substack-desc {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-top: 0.25rem;
+    line-height: 1.5;
+}
+
+.substack-skeleton {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    padding: 1rem 0;
+}
+
+.substack-error {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+}
+
+.substack-error a {
+    color: var(--color-link);
+}
+
+/* Substack subscribe embed */
 .substack-embed {
     margin-top: 2rem;
     border-radius: 6px;
@@ -229,6 +324,11 @@ footer p {
 
     h1 {
         font-size: 1.6rem;
+    }
+
+    .about-header {
+        flex-direction: column;
+        text-align: center;
     }
 
     .nav-links {
