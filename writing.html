@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maria Izzi</title>
+    <title>Writing — Maria Izzi</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,24 +24,26 @@
 
 <main>
 
-    <!-- ===== ABOUT ===== -->
-    <section id="about">
-        <div class="about-header">
-            <img src="image.jpg" alt="headshot" class="headshot">
-            <div>
-            </div>
+    <!-- ===== WRITING ===== -->
+    <section id="writing">
+        <h2>Writing</h2>
+        <p class="section-intro">Bits of my writing — also on <a href="https://izzimaria.substack.com/">Substack</a>.</p>
+
+        <!-- Posts loaded automatically from posts.json -->
+        <div class="substack-feed-embed"
+             data-substack-url="izzimaria.substack.com"
+             data-posts="10"
+             data-show-images="false"
+             data-show-dates="true">
         </div>
-        <div class="bio">
-            <h1>Maria Izzi</h1>
-            <p>
-                I'm interested in tech, people, and how the intersection creates meaningful constraint optimization problems.
-                Tangentially, I'm interested in AI safety and security, VC, and religion.
-                I currently engineer growth experiments at Netflix.
-                Previously, I was at Duke, where I focused my studies on ML, statistics, and religion.
-                I've worked on various research problems, including ML interpretability, hallucination detection, and behavioral neuroscience.
-            </p>
+
+        <!-- Substack subscribe embed -->
+        <div class="substack-embed">
+            <iframe src="https://izzimaria.substack.com/embed" width="100%" height="150" frameborder="0" scrolling="no"></iframe>
         </div>
     </section>
+
+    <script src="embed-substack-rss.js"></script>
 
 </main>
 

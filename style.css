@@ -75,6 +75,17 @@ nav {
     color: var(--color-text);
 }
 
+.nav-linkedin {
+    display: flex;
+    align-items: center;
+    color: var(--color-muted);
+    transition: color 0.2s;
+}
+
+.nav-linkedin:hover {
+    color: var(--color-text);
+}
+
 /* Main */
 main {
     max-width: var(--max-width);
