@@ -16,6 +16,7 @@ jobs:
 
       - name: Fetch Substack RSS and write posts.json
         run: |
+          pip install lxml -q
           curl -s "https://izzimaria.substack.com/feed" -o feed.xml
 
           python3 - <<'EOF'
