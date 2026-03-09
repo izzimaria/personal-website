@@ -19,11 +19,12 @@ jobs:
           curl -s "https://izzimaria.substack.com/feed" -o feed.xml
 
           python3 - <<'EOF'
-          import xml.etree.ElementTree as ET
+          from lxml import etree
           import json, re
           from email.utils import parsedate_to_datetime
 
-          tree = ET.parse('feed.xml')
+          parser = etree.XMLParser(recover=True)
+          tree = etree.parse('feed.xml', parser)
           root = tree.getroot()
           channel = root.find('channel')
 
