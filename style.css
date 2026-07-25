@@ -75,14 +75,14 @@ nav {
     color: var(--color-text);
 }
 
-.nav-linkedin {
+.nav-linkedin, .nav-goodreads {
     display: flex;
     align-items: center;
     color: var(--color-muted);
     transition: color 0.2s;
 }
 
-.nav-linkedin:hover {
+.nav-linkedin:hover, .nav-goodreads:hover {
     color: var(--color-text);
 }
 
