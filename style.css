@@ -75,6 +75,11 @@ nav {
     color: var(--color-text);
 }
 
+.nav-links a.active {
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-text);
+}
+
 .nav-linkedin, .nav-goodreads, .nav-x, .nav-github {
     display: flex;
     align-items: center;
